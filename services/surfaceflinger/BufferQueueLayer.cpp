@@ -563,7 +563,13 @@ status_t BufferQueueLayer::setDefaultBufferProperties(uint32_t w, uint32_t h, Pi
         return BAD_VALUE;
     }
 
-    uint64_t usageBits = getEffectiveUsage(0);
+    uint32_t usageBits = 0;
+
+     if (mName == FOD_LAYER_NAME) {
+         usageBits = getFodUsageBits(usageBits, false);
+     } else if (mName == FOD_TOUCHED_LAYER_NAME) {
+         usageBits = getFodUsageBits(usageBits, true);
+     }
 
     if (mName == FOD_LAYER_NAME) {
         usageBits = getFodUsageBits(usageBits, false);
@@ -575,7 +581,7 @@ status_t BufferQueueLayer::setDefaultBufferProperties(uint32_t w, uint32_t h, Pi
 
     setDefaultBufferSize(w, h);
     mConsumer->setDefaultBufferFormat(format);
-    mConsumer->setConsumerUsageBits(usageBits);
+    mConsumer->setConsumerUsageBits(getEffectiveUsage(usageBits));
 
     return NO_ERROR;
 }
